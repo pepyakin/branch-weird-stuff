@@ -50,8 +50,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         mTextViewLogger.log("onStart");
+
+        /*
+         * Ok, so how can you work around this? I just tested this and it works fine. Please add:
+         * this.getIntent().setData(null);
+         * before you call initSession in onStart. This will prevent stale data from ever passing
+         * into initSession if onStart is called multiple times without the intent being reset from onNewIntent.
+         */
+        getIntent().setData(null);
+
         Branch.getInstance().initSession(new Branch.BranchReferralInitListener() {
             @Override
             public void onInitFinished(JSONObject referringParams, BranchError error) {
@@ -62,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                         + error;
                 mTextViewLogger.log(diagnosticMessageContent);
             }
-        }, getIntent().getData(), this);
+        }, getIntent().getData() /* so it will be always null? */, this);
     }
 
     @Override
